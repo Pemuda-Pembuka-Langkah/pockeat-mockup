@@ -74,7 +74,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
                       navigationProvider.closeMenu();
                       _overlayEntry?.remove();
                       _overlayEntry = null;
-                      Navigator.pushReplacementNamed(context, '/add-exercise');
+                      Navigator.pushNamed(context, '/add-exercise');
                     },
                   ),
                 ),
@@ -87,7 +87,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
                       navigationProvider.closeMenu();
                       _overlayEntry?.remove();
                       _overlayEntry = null;
-                      Navigator.pushReplacementNamed(context, '/add-food');
+                      Navigator.pushNamed(context, '/add-food');
                     },
                   ),
                 ),
