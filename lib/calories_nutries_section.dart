@@ -176,7 +176,7 @@ class _NutritionProgressSectionState extends State<NutritionProgressSection> {
                   fontSize: 12,
                 ),
               ),
-              series: <ChartSeries>[
+              series: <CartesianSeries>[
                 ColumnSeries<CalorieData, String>(
                   color: primaryPink,
                   width: 0.7,

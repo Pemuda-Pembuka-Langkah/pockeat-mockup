@@ -719,7 +719,7 @@ class _WeightProgressSectionState extends State<WeightProgressSection> {
                     fontSize: 12,
                   ),
                 ),
-                series: <ChartSeries<WeightDataComplete, String>>[
+                series: <CartesianSeries<WeightDataComplete, String>>[
                   // Target Weight Line
                   LineSeries<WeightDataComplete, String>(
                     name: 'Target Weight',

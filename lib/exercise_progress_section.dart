@@ -177,7 +177,7 @@ class _ExerciseProgressSectionState extends State<ExerciseProgressSection> {
                   fontSize: 12,
                 ),
               ),
-              series: <ChartSeries>[
+              series: <CartesianSeries>[
                 ColumnSeries<ExerciseData, String>(
                   color: primaryGreen,
                   width: 0.7,
