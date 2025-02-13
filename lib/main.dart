@@ -1,3 +1,4 @@
+import 'package:amankendara/add-recipe-page.dart';
 import 'package:amankendara/exercise_input_page.dart';
 import 'package:amankendara/exercise_journal_page.dart';
 import 'package:amankendara/food_input_page.dart';
@@ -5,11 +6,9 @@ import 'package:amankendara/food_scan_page.dart';
 import 'package:amankendara/goals_and_journal_page.dart';
 import 'package:amankendara/navigation.dart';
 import 'package:amankendara/new_homepage.dart';
-import 'package:amankendara/nutrition_page.dart';
 import 'package:amankendara/pet_store_page.dart';
 import 'package:amankendara/planning_page.dart';
 import 'package:amankendara/progress_page.dart';
-import 'package:amankendara/reportpage.dart';
 import 'package:amankendara/running_input_page.dart';
 import 'package:amankendara/weighting_input_page.dart';
 import 'package:flutter/material.dart';
@@ -65,6 +64,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => HomePage(),
         '/scan': (context) => ScanFoodPage(),
+        '/add-food-manual': (context)=> AddFoodLogPage(),
         '/analytic': (context) => ProgressPage(),
         '/progress': (context) => ProgressTrackingPage(),
         '/add-exercise': (context) => ExerciseInputPage(),

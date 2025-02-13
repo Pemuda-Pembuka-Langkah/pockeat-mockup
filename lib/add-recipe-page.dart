@@ -1,168 +1,189 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 
-class CreateRecipePage extends StatefulWidget {
+class AddFoodLogPage extends StatefulWidget {
   @override
-  _CreateRecipePageState createState() => _CreateRecipePageState();
+  _AddFoodLogPageState createState() => _AddFoodLogPageState();
 }
 
-class _CreateRecipePageState extends State<CreateRecipePage> {
+class _AddFoodLogPageState extends State<AddFoodLogPage> with SingleTickerProviderStateMixin {
   final Color primaryYellow = Color(0xFFFFE893);
   final Color primaryPink = Color(0xFFFF6B6B);
   final Color primaryGreen = Color(0xFF4ECDC4);
 
-  final _nameController = TextEditingController();
-  final _servingsController = TextEditingController();
+  late TabController _tabController;
+  final _promptController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+  bool _isLoading = false;
 
-  // Sample data untuk bahan-bahan umum
-  List<Map<String, dynamic>> commonIngredients = [
-    // Karbohidrat
-    {
-      'name': 'Nasi Putih',
-      'calories': 130,
-      'unit': 'gram',
-      'protein': 2.7,
-      'carbs': 28,
-      'fat': 0.3,
-      'category': 'Karbohidrat'
-    },
-    {
-      'name': 'Kentang',
-      'calories': 77,
-      'unit': 'gram',
-      'protein': 2.0,
-      'carbs': 17,
-      'fat': 0.1,
-      'category': 'Karbohidrat'
-    },
-    {
-      'name': 'Mie Instant',
-      'calories': 138,
-      'unit': 'gram',
-      'protein': 3.0,
-      'carbs': 25,
-      'fat': 3.3,
-      'category': 'Karbohidrat'
-    },
+  // Sample food database
+  List<Map<String, dynamic>> foodDatabase = [
+ // Carbs
+ {
+   'name': 'White Rice',
+   'calories': 130,
+   'unit': 'serving',
+   'protein': 2.7,
+   'carbs': 28,
+   'fat': 0.3,
+   'category': 'Carbs'
+ },
+ {
+   'name': 'Potato',
+   'calories': 77,
+   'unit': '100g',
+   'protein': 2.0,
+   'carbs': 17,
+   'fat': 0.1,
+   'category': 'Carbs'
+ },
+ {
+   'name': 'Instant Noodle',
+   'calories': 138,
+   'unit': 'pack',
+   'protein': 3.0,
+   'carbs': 25,
+   'fat': 3.3,
+   'category': 'Carbs'
+ },
+ {
+   'name': 'White Bread',
+   'calories': 66,
+   'unit': 'slice',
+   'protein': 2,
+   'carbs': 12,
+   'fat': 1,
+   'category': 'Carbs'
+ },
 
-    // Protein
-    {
-      'name': 'Ayam Dada',
-      'calories': 165,
-      'unit': 'gram',
-      'protein': 31,
-      'carbs': 0,
-      'fat': 3.6,
-      'category': 'Protein'
-    },
-    {
-      'name': 'Telur',
-      'calories': 155,
-      'unit': 'butir',
-      'protein': 13,
-      'carbs': 1.1,
-      'fat': 11,
-      'category': 'Protein'
-    },
-    {
-      'name': 'Ikan Salmon',
-      'calories': 208,
-      'unit': 'gram',
-      'protein': 22,
-      'carbs': 0,
-      'fat': 13,
-      'category': 'Protein'
-    },
-    {
-      'name': 'Tahu',
-      'calories': 76,
-      'unit': 'gram',
-      'protein': 8,
-      'carbs': 1.9,
-      'fat': 4.8,
-      'category': 'Protein'
-    },
-    {
-      'name': 'Tempe',
-      'calories': 193,
-      'unit': 'gram',
-      'protein': 19,
-      'carbs': 9.4,
-      'fat': 11,
-      'category': 'Protein'
-    },
+ // Protein
+ {
+   'name': 'Chicken Breast',
+   'calories': 165,
+   'unit': 'piece',
+   'protein': 31,
+   'carbs': 0,
+   'fat': 3.6,
+   'category': 'Protein'
+ },
+ {
+   'name': 'Egg',
+   'calories': 155,
+   'unit': 'piece',
+   'protein': 13,
+   'carbs': 1.1,
+   'fat': 11,
+   'category': 'Protein'
+ },
+ {
+   'name': 'Salmon',
+   'calories': 208,
+   'unit': '100g',
+   'protein': 22,
+   'carbs': 0,
+   'fat': 13,
+   'category': 'Protein'
+ },
+ {
+   'name': 'Tofu',
+   'calories': 76,
+   'unit': 'piece',
+   'protein': 8,
+   'carbs': 1.9,
+   'fat': 4.8,
+   'category': 'Protein'
+ },
+ {
+   'name': 'Tempeh',
+   'calories': 193,
+   'unit': 'piece',
+   'protein': 19,
+   'carbs': 9.4,
+   'fat': 11,
+   'category': 'Protein'
+ },
 
-    // Sayuran
-    {
-      'name': 'Bayam',
-      'calories': 23,
-      'unit': 'gram',
-      'protein': 2.9,
-      'carbs': 3.6,
-      'fat': 0.4,
-      'category': 'Sayuran'
-    },
-    {
-      'name': 'Wortel',
-      'calories': 41,
-      'unit': 'gram',
-      'protein': 0.9,
-      'carbs': 9.6,
-      'fat': 0.2,
-      'category': 'Sayuran'
-    },
-    {
-      'name': 'Brokoli',
-      'calories': 34,
-      'unit': 'gram',
-      'protein': 2.8,
-      'carbs': 7,
-      'fat': 0.4,
-      'category': 'Sayuran'
-    },
+ // Vegetables  
+ {
+   'name': 'Spinach',
+   'calories': 23,
+   'unit': 'bowl',
+   'protein': 2.9,
+   'carbs': 3.6,
+   'fat': 0.4,
+   'category': 'Vegetables'
+ },
+ {
+   'name': 'Carrot',
+   'calories': 41,
+   'unit': '100g',
+   'protein': 0.9,
+   'carbs': 9.6,
+   'fat': 0.2,
+   'category': 'Vegetables'
+ },
+ {
+   'name': 'Broccoli',
+   'calories': 34,
+   'unit': '100g',
+   'protein': 2.8,
+   'carbs': 7,
+   'fat': 0.4,
+   'category': 'Vegetables'
+ },
 
-    // Buah
-    {
-      'name': 'Pisang',
-      'calories': 89,
-      'unit': 'buah',
-      'protein': 1.1,
-      'carbs': 23,
-      'fat': 0.3,
-      'category': 'Buah'
-    },
-    {
-      'name': 'Apel',
-      'calories': 52,
-      'unit': 'buah',
-      'protein': 0.3,
-      'carbs': 14,
-      'fat': 0.2,
-      'category': 'Buah'
-    },
+ // Fruits
+ {
+   'name': 'Banana',
+   'calories': 89,
+   'unit': 'piece',
+   'protein': 1.1,
+   'carbs': 23,
+   'fat': 0.3,
+   'category': 'Fruits'
+ },
+ {
+   'name': 'Apple',
+   'calories': 52,
+   'unit': 'piece',
+   'protein': 0.3,
+   'carbs': 14,
+   'fat': 0.2,
+   'category': 'Fruits'
+ },
+ {
+   'name': 'Orange',
+   'calories': 47,
+   'unit': 'piece',
+   'protein': 0.9,
+   'carbs': 12,
+   'fat': 0.1,
+   'category': 'Fruits'
+ },
 
-    // Minyak dan Lemak
-    {
-      'name': 'Minyak Goreng',
-      'calories': 884,
-      'unit': 'sendok makan',
-      'protein': 0,
-      'carbs': 0,
-      'fat': 100,
-      'category': 'Minyak'
-    },
-    {
-      'name': 'Mentega',
-      'calories': 717,
-      'unit': 'sendok makan',
-      'protein': 0.9,
-      'carbs': 0.1,
-      'fat': 81,
-      'category': 'Minyak'
-    },
-  ];
+ // Fats & Oils
+ {
+   'name': 'Cooking Oil',
+   'calories': 884,
+   'unit': 'tablespoon',
+   'protein': 0,
+   'carbs': 0,
+   'fat': 100,
+   'category': 'Fats & Oils'
+ },
+ {
+   'name': 'Butter',
+   'calories': 717,
+   'unit': 'tablespoon',
+   'protein': 0.9,
+   'carbs': 0.1,
+   'fat': 81,
+   'category': 'Fats & Oils'
+ },
+];
 
-  List<Map<String, dynamic>> selectedIngredients = [];
+  List<Map<String, dynamic>> selectedFoods = [];
+  Map<String, dynamic>? aiPrediction;
 
   Map<String, double> totalNutrition = {
     'calories': 0,
@@ -171,195 +192,359 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
     'fat': 0,
   };
 
-  String formatNumber(double number) {
-    return number.toStringAsFixed(1);
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _promptController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: primaryYellow,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: primaryYellow,
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black87),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Buat Resep',
+          'Add Food',
           style: TextStyle(
             color: Colors.black87,
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: _saveRecipe,
-            child: Text(
-              'Simpan',
-              style: TextStyle(
-                color: primaryGreen,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
+        bottom: TabBar(
+          controller: _tabController,
+          labelColor: primaryGreen,
+          unselectedLabelColor: Colors.black54,
+          indicatorColor: primaryGreen,
+          tabs: [
+            Tab(text: 'AI Assistant'),
+            Tab(text: 'Pilih Manual'),
+          ],
+        ),
       ),
-      body: Column(
+      body: TabBarView(
+        controller: _tabController,
         children: [
-          _buildBasicInfo(),
-          _buildIngredientsList(),
-          _buildNutritionSummary(),
+          _buildAIPromptTab(),
+          _buildManualInputTab(),
         ],
       ),
     );
   }
 
-  Widget _buildBasicInfo() {
-    return Container(
+  Widget _buildAIPromptTab() {
+    return SingleChildScrollView(
       padding: EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Informasi Resep',
+            'Explain your food',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
               color: Colors.black87,
             ),
           ),
-          SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                flex: 2,
-                child: TextField(
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                    labelText: 'Nama Resep',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(width: 12),
-              Expanded(
-                child: TextField(
-                  controller: _servingsController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: 'Porsi',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  onChanged: (value) {
-                    if (value.isNotEmpty) {
-                      _calculateTotalNutrition();
-                    }
-                  },
-                ),
-              ),
-            ],
+          SizedBox(height: 8),
+          Text(
+            'Example: 1 serving of white rice with 1 piece of fried chicken',
+            style: TextStyle(
+              color: Colors.black54,
+              fontSize: 14,
+            ),
           ),
+          SizedBox(height: 16),
+          TextField(
+ controller: _promptController,
+ maxLines: 3,
+ decoration: InputDecoration(
+   hintText: 'Type here...',
+   border: OutlineInputBorder(
+     borderRadius: BorderRadius.circular(12),
+   ),
+   filled: true,
+   fillColor: Colors.white,
+ ),
+),
+          SizedBox(height: 24),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: _isLoading ? null : _analyzeFood,
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: _isLoading
+                  ? SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : Text('Analyze Food'),
+            ),
+          ),
+          if (aiPrediction != null) _buildAIPredictionResult(),
         ],
       ),
     );
   }
 
-  Widget _buildIngredientsList() {
-    return Expanded(
-      child: Container(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Bahan-bahan',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
+  Widget _buildManualInputTab() {
+    return Column(
+      children: [
+        // Search Bar
+        Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            children: [
+              TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: 'Search Food...',
+                  prefixIcon: Icon(Icons.search, color: Colors.grey),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
                   ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: primaryGreen),
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey.shade50,
                 ),
-                TextButton.icon(
-                  onPressed: _showIngredientPicker,
-                  icon: Icon(Icons.add, color: primaryGreen),
-                  label: Text(
-                    'Tambah Bahan',
-                    style: TextStyle(color: primaryGreen),
+                onChanged: (value) {
+                  setState(() {
+                    _searchQuery = value.toLowerCase();
+                  });
+                },
+              ),
+            ],
+          ),
+        ),
+        // Food List with Categories
+        Expanded(
+          child: DefaultTabController(
+            length: 5, // Number of categories
+            child: Column(
+              children: [
+                TabBar(
+                  isScrollable: true,
+                  labelColor: primaryGreen,
+                  unselectedLabelColor: Colors.grey,
+                  indicatorColor: primaryGreen,
+                  tabs: [
+                    Tab(text: 'Carbs'),
+Tab(text: 'Protein'),
+Tab(text: 'Vegetables'),
+Tab(text: 'Fruits'),
+Tab(text: 'Fats & Oils'),
+                  ],
+                ),
+                Expanded(
+                  child: TabBarView(
+                    children: [
+                      _buildFoodListByCategory('Carbs'),
+                      _buildFoodListByCategory('Protein'),
+                      _buildFoodListByCategory('Vegetables'),
+                      _buildFoodListByCategory('Fruits'),
+                      _buildFoodListByCategory('Fats and Oils'),
+                    ],
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 12),
-            Expanded(
-              child: ListView.builder(
-                itemCount: selectedIngredients.length,
-                itemBuilder: (context, index) {
-                  final ingredient = selectedIngredients[index];
-                  return Card(
-                    margin: EdgeInsets.only(bottom: 8),
-                    child: Padding(
-                      padding: EdgeInsets.all(12),
-                      child: Row(
+          ),
+        ),
+        if (selectedFoods.isNotEmpty) _buildNutritionSummary(),
+      ],
+    );
+  }
+
+  Widget _buildFoodListByCategory(String category) {
+    final filteredFoods = foodDatabase.where((food) {
+      final matchesCategory = food['category'] == category;
+      final matchesSearch = food['name'].toString().toLowerCase().contains(_searchQuery);
+      return matchesCategory && (_searchQuery.isEmpty || matchesSearch);
+    }).toList();
+
+    return ListView.builder(
+      padding: EdgeInsets.all(16),
+      itemCount: filteredFoods.length,
+      itemBuilder: (context, index) {
+        final food = filteredFoods[index];
+        return Card(
+          elevation: 0,
+          margin: EdgeInsets.only(bottom: 8),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: BorderSide(color: Colors.grey.shade200),
+          ),
+          child: ListTile(
+            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            title: Text(
+              food['name'],
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+              ),
+            ),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 4),
+                Text(
+                  '${food['calories']} kcal/${food['unit']}',
+                  style: TextStyle(color: Colors.grey.shade600),
+                ),
+                Text(
+                  'P: ${food['protein']}g | K: ${food['carbs']}g | L: ${food['fat']}g',
+                  style: TextStyle(
+                    color: Colors.grey.shade600,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+            trailing: IconButton(
+              icon: Icon(Icons.add_circle, color: primaryGreen),
+              onPressed: () => _addFood(food),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+
+  Widget _buildFoodList() {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.all(16),
+      itemCount: foodDatabase.length,
+      itemBuilder: (context, index) {
+        final food = foodDatabase[index];
+        return Card(
+          margin: EdgeInsets.only(bottom: 8),
+          child: ListTile(
+            title: Text(food['name']),
+            subtitle: Text(
+              '${food['calories']} kcal/${food['unit']}',
+              style: TextStyle(color: Colors.black54),
+            ),
+            trailing: IconButton(
+              icon: Icon(Icons.add_circle_outline, color: primaryGreen),
+              onPressed: () => _addFood(food),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildSelectedFoods() {
+    if (selectedFoods.isEmpty) return SizedBox();
+
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.all(16),
+            child: Text(
+              'Selected Food(s)',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          ListView.separated(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            itemCount: selectedFoods.length,
+            separatorBuilder: (context, index) => Divider(height: 1),
+            itemBuilder: (context, index) {
+              final food = selectedFoods[index];
+              return Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(
-                            flex: 2,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  ingredient['name'],
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                SizedBox(height: 4),
-                                Text(
-                                  '${formatNumber(ingredient['calories'].toDouble())} kcal / ${ingredient['unit']}',
-                                  style: TextStyle(
-                                    color: Colors.black54,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            ),
+                          Text(
+                            food['name'],
+                            style: TextStyle(fontWeight: FontWeight.w500),
                           ),
-                          Expanded(
-                            child: TextField(
-                              keyboardType: TextInputType.number,
-                              decoration: InputDecoration(
-                                suffixText: ingredient['unit'],
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                              onChanged: (value) {
-                                _updateIngredientAmount(index, value);
-                              },
+                          SizedBox(height: 4),
+                          Text(
+                            '${food['calories']} kcal/${food['unit']}',
+                            style: TextStyle(
+                              color: Colors.grey.shade600,
+                              fontSize: 12,
                             ),
-                          ),
-                          IconButton(
-                            icon: Icon(Icons.delete, color: primaryPink),
-                            onPressed: () => _removeIngredient(index),
                           ),
                         ],
                       ),
                     ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
+                    Expanded(
+                      child: TextField(
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          isDense: true,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          suffixText: food['unit'],
+                        ),
+                        onChanged: (value) => _updateAmount(index, value),
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.remove_circle, color: primaryPink),
+                      onPressed: () => _removeFood(index),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
@@ -369,7 +554,6 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -380,8 +564,48 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
       ),
       child: Column(
         children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _nutritionItem('Calori', totalNutrition['calories']!, 'kcal', primaryPink),
+              _nutritionItem('Protein', totalNutrition['protein']!, 'g', primaryGreen),
+              _nutritionItem('Carb', totalNutrition['carbs']!, 'g', primaryYellow),
+              _nutritionItem('Fat', totalNutrition['fat']!, 'g', Colors.blue),
+            ],
+          ),
+          SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: _saveFoodLog,
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: Text('Save'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAIPredictionResult() {
+    return Container(
+      margin: EdgeInsets.only(top: 24),
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: primaryGreen.withOpacity(0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
           Text(
-            'Total Nutrisi per Porsi',
+            'Analysis Results',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -389,14 +613,23 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
             ),
           ),
           SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _nutritionItem('Kalori', totalNutrition['calories']!, 'kcal', primaryPink),
-              _nutritionItem('Protein', totalNutrition['protein']!, 'g', primaryGreen),
-              _nutritionItem('Karbo', totalNutrition['carbs']!, 'g', primaryYellow),
-              _nutritionItem('Lemak', totalNutrition['fat']!, 'g', Colors.blue),
-            ],
+          _buildNutritionRow('Calories', '${aiPrediction!['calories']} kcal'),
+_buildNutritionRow('Protein', '${aiPrediction!['protein']}g'),
+_buildNutritionRow('Carbs', '${aiPrediction!['carbs']}g'),
+_buildNutritionRow('Fat', '${aiPrediction!['fat']}g'),
+          SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: _saveAIPrediction,
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: Text('Simpan'),
+            ),
           ),
         ],
       ),
@@ -415,7 +648,7 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
         ),
         SizedBox(height: 4),
         Text(
-          formatNumber(value),
+          value.toStringAsFixed(1),
           style: TextStyle(
             color: color,
             fontSize: 20,
@@ -433,147 +666,121 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
     );
   }
 
-  List<Map<String, dynamic>> getIngredientsByCategory(String category) {
-    return commonIngredients.where((ingredient) => ingredient['category'] == category).toList();
+  Widget _buildNutritionRow(String label, String value) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              color: Colors.black54,
+              fontSize: 14,
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              color: Colors.black87,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
-  void _showIngredientPicker() {
- showModalBottomSheet(
-   context: context,
-   isScrollControlled: true,
-   shape: RoundedRectangleBorder(
-     borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-   ),
-   builder: (context) => Container(
-     height: MediaQuery.of(context).size.height * 0.8,
-     padding: EdgeInsets.all(16),
-     child: Column(
-       crossAxisAlignment: CrossAxisAlignment.start,
-       children: [
-         Text(
-           'Pilih Bahan',
-           style: TextStyle(
-             fontSize: 18,
-             fontWeight: FontWeight.w600,
-           ),
-         ),
-         SizedBox(height: 16),
-         TextField(
-           decoration: InputDecoration(
-             hintText: 'Cari bahan...',
-             prefixIcon: Icon(Icons.search),
-             border: OutlineInputBorder(
-               borderRadius: BorderRadius.circular(12),
-             ),
-           ),
-         ),
-         SizedBox(height: 16),
-         Expanded(
-           child: DefaultTabController(
-             length: 5,
-             child: Column(
-               children: [
-                 TabBar(
-                   isScrollable: true,
-                   labelColor: primaryGreen,
-                   unselectedLabelColor: Colors.black54,
-                   tabs: [
-                     Tab(text: 'Karbohidrat'),
-                     Tab(text: 'Protein'), 
-                     Tab(text: 'Sayuran'),
-                     Tab(text: 'Buah'),
-                     Tab(text: 'Minyak'),
-                   ],
-                 ),
-                 Expanded(
-                   child: TabBarView(
-                     children: [
-                       _buildIngredientList('Karbohidrat'),
-                       _buildIngredientList('Protein'),
-                       _buildIngredientList('Sayuran'), 
-                       _buildIngredientList('Buah'),
-                       _buildIngredientList('Minyak'),
-                     ],
-                   ),
-                 ),
-               ],
-             ),
-           ),
-         ),
-       ],
-     ),
-   ),
- );
+  void _addFood(Map<String, dynamic> food) {
+    setState(() {
+      selectedFoods.add({...food, 'amount': 1});
+      _calculateTotalNutrition();
+    });
+  }
+
+  void _removeFood(int index) {
+    setState(() {
+      selectedFoods.removeAt(index);
+      _calculateTotalNutrition();
+    });
+  }
+
+  void _updateAmount(int index, String value) {
+    final amount = double.tryParse(value) ?? 0;
+    setState(() {
+      selectedFoods[index]['amount'] = amount;
+      _calculateTotalNutrition();
+    });
+  }
+
+  void _calculateTotalNutrition() {
+    double calories = 0;
+    double protein = 0;
+    double carbs = 0;
+    double fat = 0;
+
+    for (var food in selectedFoods) {
+      final amount = food['amount'] ?? 0;
+      calories += food['calories'] * amount;
+      protein += food['protein'] * amount;
+      carbs += food['carbs'] * amount;
+      fat += food['fat'] * amount;
+    }
+
+    setState(() {
+      totalNutrition = {
+        'calories': calories,
+        'protein': protein,
+        'carbs': carbs,
+        'fat': fat,
+      };
+    });
+  }
+
+  Future<void> _analyzeFood() async {
+    if (_promptController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please explain your food')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // TODO: Implement AI API call
+      await Future.delayed(Duration(seconds: 2));
+      
+      setState(() {
+        aiPrediction = {
+          'name': 'Nasi dengan Ayam Goreng',
+          'calories': 450,
+          'protein': 22,
+          'carbs': 65,
+          'fat': 12,
+        };
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal menganalisis makanan: ${e.toString()}')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _saveAIPrediction() {
+    // TODO: Implement save logic for AI prediction
+    Navigator.pop(context);
+  }
+
+  void _saveFoodLog() {
+    // TODO: Implement save logic for manual input
+    Navigator.pop(context);
+  }
 }
-
-Widget _buildIngredientList(String category) {
- final ingredients = getIngredientsByCategory(category);
- return ListView.builder(
-   itemCount: ingredients.length,
-   itemBuilder: (context, index) {
-     final ingredient = ingredients[index];
-     return ListTile(
-       title: Text(ingredient['name']),
-       subtitle: Text(
-         '${formatNumber(ingredient['calories'].toDouble())} kcal/${ingredient['unit']}\n'
-         'P: ${formatNumber(ingredient['protein'].toDouble())}g | '
-         'K: ${formatNumber(ingredient['carbs'].toDouble())}g | '
-         'L: ${formatNumber(ingredient['fat'].toDouble())}g',
-       ),
-       trailing: Icon(Icons.add),
-       onTap: () {
-         setState(() {
-           selectedIngredients.add(Map.from(ingredient)..['amount'] = 0.0);
-         });
-         Navigator.pop(context);
-         _calculateTotalNutrition();
-       },
-     );
-   },
- );
-}
-
-void _updateIngredientAmount(int index, String value) {
- setState(() {
-   double amount = double.tryParse(value) ?? 0;
-   selectedIngredients[index]['amount'] = amount;
-   _calculateTotalNutrition();
- });
-}
-
-void _removeIngredient(int index) {
- setState(() {
-   selectedIngredients.removeAt(index);
-   _calculateTotalNutrition();
- });
-}
-
-void _calculateTotalNutrition() {
- double totalCalories = 0;
- double totalProtein = 0;
- double totalCarbs = 0;
- double totalFat = 0;
- int servings = int.tryParse(_servingsController.text) ?? 1;
-
- for (var ingredient in selectedIngredients) {
-   double amount = ingredient['amount'] ?? 0;
-   totalCalories += (ingredient['calories'] * amount) / 100;
-   totalProtein += (ingredient['protein'] * amount) / 100;
-   totalCarbs += (ingredient['carbs'] * amount) / 100;
-   totalFat += (ingredient['fat'] * amount) / 100;
- }
-
- setState(() {
-   totalNutrition = {
-     'calories': totalCalories / servings,
-     'protein': totalProtein / servings,
-     'carbs': totalCarbs / servings,
-     'fat': totalFat / servings,
-   };
- });
-}
-
-void _saveRecipe() {
- // Implement save logic
- Navigator.pop(context);
-}}

@@ -60,12 +60,9 @@ class FoodInputPage extends StatelessWidget {
               context: context,
               icon: CupertinoIcons.text_justify,
               title: 'Input Manually',
-              subtitle: 'Search or enter food details',
+              subtitle: 'Search or prompt food details',
               color: primaryPink,
-              onTap: () {
-                // Will be implemented later
-                print('Manual input clicked');
-              },
+              route: '/add-food-manual'
             ),
 
             Spacer(),
