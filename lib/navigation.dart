@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/cupertino.dart';
 
+
 class NavigationProvider extends ChangeNotifier {
   int _currentIndex = 0;
   bool _isMenuOpen = false;
