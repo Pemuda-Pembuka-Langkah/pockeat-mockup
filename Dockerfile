@@ -43,7 +43,7 @@ RUN flutter clean
 RUN flutter pub get
 
 # Build web with specific configurations
-RUN flutter build web --release --web-renderer html
+RUN flutter build web
 
 # Serve folder
 WORKDIR /app/build/web
