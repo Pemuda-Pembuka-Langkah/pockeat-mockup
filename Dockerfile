@@ -14,9 +14,10 @@ WORKDIR /app
 COPY pubspec.* ./
 RUN flutter pub get
 
-# Build app
+# Build app with dart-define
 COPY . .
-RUN flutter build web
+RUN flutter build web \
+    --dart-define=FLAVOR=production
 
 WORKDIR /app/build/web
 CMD python3 -m http.server 8080
